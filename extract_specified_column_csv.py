@@ -1,9 +1,11 @@
 import pandas as pd
+import os
 
+enc = 'cp932'
 def split_and_process_csv(file_name, columns):
     # CSVファイルを読み込む
     chunk_size = 50000
-    chunks = pd.read_csv(file_name, usecols=columns, chunksize=chunk_size)
+    chunks = pd.read_csv(file_name, usecols=columns, chunksize=chunk_size, encoding=enc)
     
     processed_files = []
     for i, chunk in enumerate(chunks):
@@ -14,7 +16,8 @@ def split_and_process_csv(file_name, columns):
     
     # 分割されたファイルを結合
     combined_csv = pd.concat([pd.read_csv(f) for f in processed_files])
-    combined_csv.to_csv('combined_processed.csv', index=False)
+    output_file_name = os.path.join(os.path.dirname(file_name), f'extract_{os.path.basename(file_name)}')
+    combined_csv.to_csv(output_file_name, index=False, encoding=enc)
     
     # 一時ファイルの削除
     for f in processed_files:
